@@ -28,6 +28,7 @@ App Android de fórmulas de física para alunos do ensino médio, feito pelo Car
 - Ícone: logo branco sobre degradê (adaptativo: `drawable/ic_launcher_gradient.xml` + foreground PNG). Splash: logo laranja sobre #0F0D0B. Gerados por script PowerShell (System.Drawing) a partir de `outros/media`. Recursos antigos em `outros/versoes/res-v1-azul`.
 
 ## PWA — versão instalável pelo navegador (caminho escolhido para iPhone, 11/11/2026)
+- **Publicado em https://cephoenix.github.io/fisicarlao/** (repo público `cephoenix/fisicarlao`, branch `main`). Todo push que muda `www/` republica sozinho pelo workflow `.github/workflows/pages.yml`.
 - Sem Mac, o iPhone será atendido por PWA em vez de app nativo. Tarefa de publicação: `PUBLICAR-PWA.md` (GitHub Pages, workflow `.github/workflows/pages.yml`, publica `www/`).
 - Arquivos: `www/manifest.webmanifest`, `www/sw.js`, `www/icons/` (gerados do ícone laranja), metas de PWA/iOS e aviso "Instale o FisiCarlão" no `www/index.html` (iPhone: instrução do Safari; Android: botão Instalar; some quando instalado; "Agora não" = 7 dias).
 - O service worker não é registrado dentro do app Android (Capacitor).
