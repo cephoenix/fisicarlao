@@ -1,0 +1,17 @@
+{
+  "name": "FisiCarlão",
+  "short_name": "FisiCarlão",
+  "description": "Fórmulas de física do ensino médio com exemplos resolvidos e aulas do professor.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F0D0B",
+  "theme_color": "#0F0D0B",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

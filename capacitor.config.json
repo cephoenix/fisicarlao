@@ -1,0 +1,6 @@
+{
+  "appId": "br.com.fisicarlao.app",
+  "appName": "FisiCarlão",
+  "webDir": "www",
+  "android": { "backgroundColor": "#f6f8fb" }
+}

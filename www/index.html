@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F0D0B">
+<title>FisiCarlão</title>
+<meta name="description" content="Fórmulas de física do ensino médio com exemplos resolvidos e aulas do professor.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FisiCarlão">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="fonts/fonts.css">
+<script src="katex.min.js"></script>
+<script>try{const t=localStorage.getItem("fisi-tema");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}
+
+/* Paleta tirada do logo do Carlão: degradê âmbar #FFA800 → laranja #FF6F00, preto e branco.
+   Escuro é o padrão (como TikTok/Spotify/Discord); o claro segue o sistema ou o botão ☀/☾. */
+:root{
+  --brand1:#FFA800; --brand2:#FF6F00; --grad:linear-gradient(135deg,#FFA800,#FF6F00);
+  --on-brand:#1A0E00;
+  --bg:#0F0D0B; --surface:#1A1714; --surface-2:#252019; --line:#332C24;
+  --ink:#FFF7EE; --muted:#B3A595; --shadow:#000;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#FFF6EC; --surface:#FFFFFF; --surface-2:#FFEEDB; --line:#F1DEC8;
+  --ink:#1A1410; --muted:#6E6255; --shadow:#E8CFB2; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#FFF6EC; --surface:#FFFFFF; --surface-2:#FFEEDB; --line:#F1DEC8;
+  --ink:#1A1410; --muted:#6E6255; --shadow:#E8CFB2; color-scheme:light}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+/* brilho laranja no topo, como um "glow" de app de música */
+body::before{content:"";position:fixed;inset:-30vh -20vw auto;height:70vh;z-index:-1;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,140,0,.22),transparent)}
+.app{max-width:480px;margin:0 auto;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(110px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.02em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--brand1);outline-offset:2px;border-radius:10px}
+
+/* botão "3D" com sombra embaixo (estilo Duolingo) */
+.press{transition:transform .08s,box-shadow .08s}
+.press:active{transform:translateY(3px)}
+
+/* topo */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand .kicker{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.brand img{height:58px;width:auto;display:block;margin-left:-4px}
+.icon-btn{width:44px;height:44px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.15rem;display:grid;place-items:center;box-shadow:0 3px 0 var(--line)}
+
+/* busca */
+.hello{font-family:var(--display);font-size:1.9rem;font-weight:800;line-height:1.05;margin:0 0 12px}
+.hello span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.search-wrap{position:relative}
+.search-wrap::before{content:"⌕";position:absolute;left:16px;top:50%;transform:translateY(-52%);font-size:1.3rem;color:var(--muted);pointer-events:none}
+.search{width:100%;padding:15px 16px 15px 44px;border-radius:18px;border:2px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-weight:600}
+.search:focus{outline:none;border-color:var(--brand1)}
+.search::placeholder{color:var(--muted);font-weight:400}
+
+/* abas por área: pílulas coloridas */
+.chips{display:flex;gap:8px;margin:14px -16px 6px;padding:2px 16px 8px;overflow-x:auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:2px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:800;font-size:.9rem;white-space:nowrap;box-shadow:0 3px 0 var(--line)}
+.chip[aria-pressed="true"]{background:var(--c,var(--brand1));border-color:var(--c,var(--brand1));color:#140B00;box-shadow:0 3px 0 color-mix(in srgb,var(--c,var(--brand1)) 55%,#000)}
+
+/* faixa da área */
+.area-banner{position:relative;overflow:hidden;margin:18px 0 4px;padding:18px;border-radius:24px;background:var(--c);color:#140B00}
+.area-banner h2{font-size:1.7rem;font-weight:800}
+.area-banner p{margin:2px 0 0;font-weight:700;font-size:.85rem;opacity:.75}
+.area-banner .emoji{position:absolute;right:10px;top:50%;transform:translateY(-50%) rotate(-12deg);font-size:3.6rem;line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.18))}
+
+.topic{margin-top:18px}
+.topic-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 8px}
+.topic-head h3{font-size:1.1rem}
+.pill{font-size:.72rem;font-weight:800;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:6px 1fr auto;align-items:center;gap:12px;width:100%;text-align:left;
+  background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:12px 14px 12px 12px;cursor:pointer;box-shadow:0 4px 0 var(--line)}
+.row::before{content:"";align-self:stretch;border-radius:6px;background:var(--c,var(--brand1))}
+.row:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.row .name{font-weight:800}
+.row .eq{color:var(--muted);font-size:1.05rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.row .go{width:32px;height:32px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);font-weight:800;color:var(--ink)}
+.row > div{min-width:0}
+.count{font-size:.9rem;color:var(--muted);margin:6px 2px;font-weight:600}
+
+/* detalhe */
+.back{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:8px 14px;font-weight:800;cursor:pointer;margin-bottom:14px;box-shadow:0 3px 0 var(--line)}
+.eyebrow{display:inline-block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--c,var(--brand1));color:#140B00}
+.detail h2{font-size:2rem;font-weight:800;margin:10px 0 14px;line-height:1.05}
+.board{position:relative;background:var(--surface);border-radius:24px;padding:28px 14px;text-align:center;font-size:1.8rem;overflow-x:auto;
+  border:2px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--grad) border-box;
+  box-shadow:0 10px 40px -12px rgba(255,111,0,.45)}
+.actions{display:flex;gap:8px;margin:14px 0 0}
+.fav{border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line)}
+.fav[aria-pressed="true"]{background:var(--brand1);color:var(--on-brand);border-color:var(--brand1);box-shadow:0 3px 0 #B86E00}
+section.block{margin-top:26px}
+section.block h3{font-size:1.2rem;margin:0 2px 10px;display:flex;gap:8px;align-items:center}
+.tag{font-family:var(--body);font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.tag.free{background:#C8F560;color:#132000}
+.vars{display:flex;flex-direction:column;gap:8px}
+.var{display:grid;grid-template-columns:3.2rem 1fr auto;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:10px 12px}
+.var .sym{font-size:1.2rem;text-align:center;background:var(--surface-2);border-radius:10px;padding:4px 0}
+.var .unit{font-family:var(--mono);font-size:.8rem;color:var(--muted);white-space:nowrap}
+.example{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:16px}
+.example p{margin:0 0 10px;font-weight:600}
+.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;font-weight:800;font-size:.8rem}
+.answer{margin-top:14px;padding:12px 14px;background:var(--grad);color:var(--on-brand);border-radius:14px;font-weight:800}
+.tip{position:relative;padding:16px 16px 16px 58px;background:var(--surface-2);border-radius:20px;font-weight:600}
+.tip::before{content:"💡";position:absolute;left:14px;top:12px;font-size:1.7rem;transform:rotate(-10deg)}
+.video{display:flex;gap:12px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:12px;text-decoration:none;color:inherit;box-shadow:0 4px 0 var(--line)}
+.thumb{flex:0 0 96px;aspect-ratio:16/9;border-radius:12px;background:#FF2D55;display:grid;place-items:center;color:#fff;font-size:1.3rem}
+.video small{color:var(--muted);display:block;font-weight:400}
+.premium{background:var(--grad);color:var(--on-brand);border-radius:28px;padding:20px;position:relative;overflow:hidden}
+.premium::after{content:"⚡";position:absolute;right:-6px;top:-10px;font-size:5.5rem;opacity:.22;transform:rotate(14deg)}
+.premium h3{font-size:1.4rem;margin:10px 0 6px;font-weight:800}
+.premium ul{margin:8px 0 16px;padding-left:1.1rem;font-weight:600}
+.premium .tag{background:#140B00;color:var(--brand1)}
+.buy{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.price{font-family:var(--display);font-size:1.8rem;font-weight:800;line-height:1}
+.price small{font-family:var(--body);font-size:.75rem;font-weight:600;opacity:.75;display:block;margin-top:4px}
+.btn{background:#140B00;color:#fff;border:0;border-radius:16px;padding:14px 20px;font-weight:800;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+.note{font-size:.8rem;opacity:.75;margin:12px 0 0;font-weight:600}
+
+/* aulas */
+.page-title{font-size:2rem;font-weight:800;line-height:1.05;margin:0 0 6px}
+.page-sub{color:var(--muted);margin:0 0 8px;font-weight:600}
+.course{background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 4px 0 var(--line)}
+.course .eyebrow{align-self:flex-start}
+.course h3{font-size:1.2rem;margin-top:4px}
+.course ul{margin:0;padding-left:1.1rem;color:var(--muted)}
+.course .buy{margin-top:8px}
+.course .btn{background:var(--grad);color:var(--on-brand);box-shadow:0 4px 0 #A84A00}
+.empty{background:var(--surface);border:2px dashed var(--line);border-radius:22px;padding:28px 20px;text-align:center;color:var(--muted);font-weight:600}
+.empty b{display:block;font-size:2.4rem;margin-bottom:6px}
+.proto{margin-top:30px;font-size:.78rem;color:var(--muted);text-align:center}
+
+/* navegação flutuante */
+.nav{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.nav-in{max-width:360px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;border-radius:24px;pointer-events:auto;
+  background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1.5px solid var(--line);box-shadow:0 12px 30px -10px rgba(0,0,0,.5)}
+.nav button{background:none;border:0;padding:8px 4px;border-radius:18px;cursor:pointer;font-weight:800;font-size:.78rem;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px}
+.nav button span{font-size:1.25rem;line-height:1.2}
+.nav button[aria-current="page"]{background:var(--grad);color:var(--on-brand)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-size:.9rem;font-weight:700;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion:no-preference){
+  .view{animation:in .22s cubic-bezier(.2,.9,.3,1.2)}@keyframes in{from{opacity:.4;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .toast:not([hidden]){animation:pop .25s cubic-bezier(.2,.9,.3,1.4)}@keyframes pop{from{transform:translate(-50%,12px) scale(.9)}to{transform:translate(-50%,0)}}
+}
+
+/* PWA: aviso de instalação */
+.install{position:fixed;left:0;right:0;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:30;
+  padding:0 max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px))}
+.install-in{max-width:480px;margin:0 auto;background:var(--surface);border:2px solid transparent;
+  background:linear-gradient(var(--surface),var(--surface)) padding-box,var(--grad) border-box;
+  border-radius:22px;padding:14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.install-in img{width:48px;height:48px;border-radius:12px}
+.install strong{display:block;font-family:var(--display);font-size:1.05rem}
+.install p{margin:2px 0 0;font-size:.88rem;color:var(--muted);font-weight:600}
+.install p b{color:var(--ink)}
+.install .share{display:inline-block;padding:0 5px;border:1.5px solid currentColor;border-radius:6px;font-size:.8rem;line-height:1.35}
+.install-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.install button{border:0;border-radius:14px;padding:10px 16px;font-weight:800;cursor:pointer;font:inherit;font-weight:800}
+.install .ok{background:var(--grad);color:var(--on-brand);box-shadow:0 3px 0 var(--brand2)}
+.install .x{background:var(--surface-2);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="kicker">Física · Ensino médio</span><img src="img/logo-carlao.png" alt="Carlão" width="136" height="58"></div>
+    <button class="icon-btn press" id="tema" aria-label="Trocar tema claro/escuro">☾</button>
+  </header>
+  <main id="view" class="view"></main>
+  <p class="proto">Versão de teste · preços, vídeos e links são exemplos</p>
+</div>
+
+<nav class="nav" aria-label="Navegação principal">
+  <div class="nav-in">
+    <button id="nav-formulas" data-tab="formulas" aria-current="page"><span>ƒ</span>Fórmulas</button>
+    <button id="nav-favs" data-tab="favs"><span>★</span>Favoritas</button>
+    <button id="nav-aulas" data-tab="aulas"><span>▶</span>Aulas</button>
+  </div>
+</nav>
+<div class="install" id="install" hidden role="dialog" aria-label="Instalar o FisiCarlão">
+  <div class="install-in">
+    <img src="icons/icon-192.png" alt="">
+    <div><strong>Instale o FisiCarlão</strong><p id="install-msg"></p></div>
+    <div class="install-actions"><button class="x" id="install-x">Agora não</button><button class="ok" id="install-ok" hidden>Instalar</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="data.js"></script>
+<script>
+const AREAS = window.AREAS, TOPICS = window.TOPICS, F = window.F;
+// cor e emoji de cada área (visual, não conteúdo)
+const LOOK = {mec:["#FF9A1F","🚀"], ter:["#FF5C7A","🔥"], opt:["#B49CFF","🌈"], ond:["#3DDCF2","🌊"], ele:["#D4F53C","⚡"]};
+const areaOf = {}; AREAS.forEach(a=>a.assuntos.forEach(t=>areaOf[t]=a));
+const view = document.getElementById("view");
+let state = {tab:"formulas", area:"mec", q:"", open:null};
+let favs = [];
+try{ favs = JSON.parse(localStorage.getItem("fisi-favs")||"[]") }catch(e){}
+function saveFavs(){ try{ localStorage.setItem("fisi-favs", JSON.stringify(favs)) }catch(e){} }
+const cor = id => `--c:${LOOK[id][0]}`;
+
+function tex(s, display){
+  try{ if(window.katex) return katex.renderToString(s,{output:"mathml",displayMode:!!display,throwOnError:false}) }catch(e){}
+  return '<span style="font-family:var(--mono)">'+esc(s.replace(/\\/g,""))+'</span>';
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])) }
+function norm(s){ return s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase() }
+function aula(t){ const a=TOPICS[t].aula; return {titulo:a[0], itens:a[1], preco:a[2]}; }
+
+function row(f){
+  return `<button class="row" style="${cor(areaOf[f.t].id)}" data-open="${f.id}"><div><div class="name">${esc(f.nome)}</div><div class="eq">${tex(f.tex)}</div></div><span class="go" aria-hidden="true">›</span></button>`;
+}
+
+function renderList(){
+  const q = norm(state.q.trim());
+  const chips = [...AREAS.map(a=>[a.id,LOOK[a.id][1]+" "+a.nome,cor(a.id)]),["all","Todas",""]]
+    .map(([k,n,s])=>`<button class="chip press" style="${s}" id="chip-${k}" data-area="${k}" aria-pressed="${!q && state.area===k}">${n}</button>`).join("");
+  let html = `<h1 class="hello">Qual fórmula<br><span>você precisa hoje?</span></h1>
+    <div class="search-wrap"><input class="search" id="busca" type="search" placeholder="Busca entre ${F.length}: atrito, Snell, Ohm…" value="${esc(state.q)}" aria-label="Buscar fórmula"></div>
+    <div class="chips">${chips}</div>`;
+  let total = 0, body = "";
+  for(const a of AREAS){
+    if(!q && state.area!=="all" && state.area!==a.id) continue;
+    let areaHtml = "", areaCount = 0;
+    for(const t of a.assuntos){
+      const items = F.filter(f=>f.t===t && (!q || norm(f.nome+" "+TOPICS[t].nome+" "+a.nome).includes(q)));
+      if(!items.length) continue;
+      areaCount += items.length;
+      areaHtml += `<div class="topic"><div class="topic-head"><h3>${TOPICS[t].nome}</h3><span class="pill">${items.length}</span></div><div class="list">${items.map(row).join("")}</div></div>`;
+    }
+    if(!areaCount) continue;
+    total += areaCount;
+    body += `<div class="area-banner" style="${cor(a.id)}"><h2>${a.nome}</h2><p>${a.serie} · ${areaCount} fórmulas</p><span class="emoji" aria-hidden="true">${LOOK[a.id][1]}</span></div>${areaHtml}`;
+  }
+  if(q) html += `<p class="count">${total} resultado${total===1?"":"s"} para “${esc(state.q)}”</p>`;
+  html += total ? body : `<div class="empty"><b>🤔</b>Nada com “${esc(state.q)}”. Tenta outra palavra.</div>`;
+  view.innerHTML = html;
+  document.getElementById("busca").addEventListener("input", e=>{ state.q=e.target.value; const pos=e.target.selectionStart; renderList(); const nb=document.getElementById("busca"); nb.focus(); try{nb.setSelectionRange(pos,pos)}catch(_){} });
+}
+
+function renderDetail(id){
+  const f = F.find(x=>x.id===id), t = TOPICS[f.t], a = areaOf[f.t], au = aula(f.t), fav = favs.includes(id);
+  view.innerHTML = `
+  <article class="detail" style="${cor(a.id)}">
+    <button class="back press" data-back>‹ Voltar</button><br>
+    <span class="eyebrow">${LOOK[a.id][1]} ${a.nome} · ${t.nome}</span>
+    <h2>${esc(f.nome)}</h2>
+    <div class="board">${tex(f.tex,true)}</div>
+    <div class="actions"><button class="fav press" id="favbtn" data-fav="${id}" aria-pressed="${fav}">${fav?"★ Nas favoritas":"☆ Favoritar"}</button></div>
+    <section class="block"><h3>O que é cada letra</h3>
+      <div class="vars">${f.vars.map(v=>`<div class="var"><span class="sym">${tex(v[0])}</span><span>${esc(v[1])}</span><span class="unit">${esc(v[2])}</span></div>`).join("")}</div>
+    </section>
+    <section class="block"><h3>Exemplo resolvido <span class="tag free">Grátis</span></h3>
+      <div class="example"><p>${esc(f.ex.enun)}</p><ol class="steps">${f.ex.passos.map(p=>`<li><span>${esc(p)}</span></li>`).join("")}</ol><div class="answer">✓ ${esc(f.ex.resp)}</div></div>
+    </section>
+    <section class="block"><h3>Dica do professor</h3><div class="tip">${esc(f.dica)}</div></section>
+    <section class="block"><h3>Vídeo <span class="tag free">Grátis</span></h3>
+      <a class="video press" href="https://www.youtube.com/results?search_query=${encodeURIComponent(f.nome+" física")}" target="_blank" rel="noopener">
+        <div class="thumb" aria-hidden="true">▶</div>
+        <div><strong>${esc(f.nome)} em poucos minutos</strong><small>Abre no YouTube · no app real, o vídeo do professor</small></div>
+      </a>
+    </section>
+    <section class="block premium">
+      <span class="tag">Aula avançada</span>
+      <h3>${esc(au.titulo)}</h3>
+      <ul>${au.itens.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+      <div class="buy"><div class="price">R$ ${au.preco}<small>acesso pela Kiwify</small></div><button class="btn press" data-buy="${f.t}">Quero essa aula</button></div>
+      <p class="note">No app real, este botão abre o checkout da Kiwify.</p>
+    </section>
+  </article>`;
+  window.scrollTo(0,0);
+}
+
+function renderFavs(){
+  const items = F.filter(f=>favs.includes(f.id));
+  view.innerHTML = `<h2 class="page-title">Suas favoritas</h2><p class="page-sub">Pra achar rapidinho na hora da prova.</p>` +
+    (items.length ? `<div class="list" style="margin-top:14px">${items.map(row).join("")}</div>`
+     : `<div class="empty" style="margin-top:14px"><b>⭐</b>Nenhuma favorita ainda. Abre uma fórmula e toca em ☆ Favoritar.</div>`);
+}
+
+function renderAulas(){
+  let html = `<h2 class="page-title">Aulas avançadas</h2>
+  <p class="page-sub">Uma aula completa por assunto, com o seu professor de física.</p>`;
+  for(const a of AREAS){
+    html += `<div class="area-banner" style="${cor(a.id)}"><h2>${a.nome}</h2><p>${a.serie}</p><span class="emoji" aria-hidden="true">${LOOK[a.id][1]}</span></div><div class="list" style="gap:14px;margin-top:14px">`;
+    for(const t of a.assuntos){ const au=aula(t);
+      html += `<div class="course" style="${cor(a.id)}"><span class="eyebrow">${TOPICS[t].nome}</span><h3>${esc(au.titulo)}</h3>
+      <ul>${au.itens.map(i=>`<li>${esc(i)}</li>`).join("")}</ul>
+      <div class="buy"><div class="price">R$ ${au.preco}</div><button class="btn press" data-buy="${t}">Ver na Kiwify</button></div></div>`;
+    }
+    html += `</div>`;
+  }
+  view.innerHTML = html;
+}
+
+function render(){
+  document.querySelectorAll(".nav button").forEach(b=>{ if(b.dataset.tab===state.tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  view.classList.remove("view"); void view.offsetWidth; view.classList.add("view");
+  if(state.open) return renderDetail(state.open);
+  if(state.tab==="favs") return renderFavs();
+  if(state.tab==="aulas") return renderAulas();
+  renderList();
+}
+
+// tema: segue o sistema até o aluno escolher
+const temaBtn = document.getElementById("tema");
+function temaAtual(){ return document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"); }
+function pintaTema(){ const t=temaAtual(); temaBtn.textContent = t==="dark"?"☀":"☾"; document.querySelector('meta[name="theme-color"]').content = t==="dark"?"#0F0D0B":"#FFF6EC"; }
+temaBtn.addEventListener("click", ()=>{ const t = temaAtual()==="dark"?"light":"dark"; document.documentElement.dataset.theme=t; try{localStorage.setItem("fisi-tema",t)}catch(e){} pintaTema(); });
+pintaTema();
+
+let tt;
+function toast(msg){ const el=document.getElementById("toast"); el.textContent=msg; el.hidden=false; clearTimeout(tt); tt=setTimeout(()=>el.hidden=true,2600); }
+
+document.addEventListener("click", e=>{
+  const o=e.target.closest("[data-open]"); if(o){ state.open=o.dataset.open; render(); return; }
+  if(e.target.closest("[data-back]")){ state.open=null; render(); return; }
+  const ar=e.target.closest("[data-area]"); if(ar){ state.area=ar.dataset.area; state.q=""; render(); return; }
+  const nv=e.target.closest("[data-tab]"); if(nv){ state.tab=nv.dataset.tab; state.open=null; render(); window.scrollTo(0,0); return; }
+  const fv=e.target.closest("[data-fav]"); if(fv){ const id=fv.dataset.fav; favs = favs.includes(id)?favs.filter(x=>x!==id):[...favs,id]; saveFavs(); render(); toast(favs.includes(id)?"⭐ Salva nas favoritas":"Removida das favoritas"); return; }
+  const by=e.target.closest("[data-buy]"); if(by){ toast("Protótipo: aqui abriria o checkout da Kiwify de "+aula(by.dataset.buy).titulo); }
+});
+
+render();
+
+// ── PWA: funcionar offline e instalar na tela inicial (não roda dentro do app Android)
+(function(){
+  const nativo = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+  if (nativo) return;
+  if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
+
+  const instalado = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  if (instalado) return;
+  let dispensado = false;
+  try { dispensado = Date.now() - Number(localStorage.getItem("fisi-install-x")||0) < 7*864e5; } catch(e){}
+  if (dispensado) return;
+
+  const box = document.getElementById("install"), msg = document.getElementById("install-msg"), ok = document.getElementById("install-ok");
+  document.getElementById("install-x").onclick = () => { box.hidden = true; try{ localStorage.setItem("fisi-install-x", Date.now()) }catch(e){} };
+
+  const ua = navigator.userAgent;
+  const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (ios) {
+    const safari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA/.test(ua);
+    msg.innerHTML = safari
+      ? 'Toque em <span class="share">Compartilhar ⬆︎</span> e depois em <b>Adicionar à Tela de Início</b>.'
+      : 'Abra este link no <b>Safari</b> para instalar na tela de início.';
+    setTimeout(()=> box.hidden = false, 1500);
+    return;
+  }
+  let pedido = null;
+  addEventListener("beforeinstallprompt", e => {
+    e.preventDefault(); pedido = e;
+    msg.textContent = "Fórmulas na tela inicial, mesmo sem internet.";
+    ok.hidden = false; box.hidden = false;
+  });
+  ok.onclick = async () => { if(!pedido) return; pedido.prompt(); try{ await pedido.userChoice }catch(e){} pedido = null; box.hidden = true; };
+  addEventListener("appinstalled", () => { box.hidden = true; toast("FisiCarlão instalado!"); });
+})();
+</script>
+</body>
+</html>
