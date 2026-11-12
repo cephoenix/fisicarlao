@@ -1,0 +1,114 @@
+# Pedidos do professor: um pedido (issue "[Pedido] ...") ou resposta com "@claude"
+# faz o Claude alterar o app numa branch; se houver mudança, ela entra na main e o PWA é publicado.
+name: Pedidos do professor (Claude)
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
+  pages: write
+  actions: read
+
+# Um pedido por vez, na ordem em que chegam.
+concurrency:
+  group: pedidos-claude
+  cancel-in-progress: false
+
+jobs:
+  pedido:
+    # Só quem tem acesso ao repositório (dono/colaboradores) dispara; o repo é público.
+    if: >-
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)) ||
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: https://cephoenix.github.io/fisicarlao/
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Edit,Write,Read,Glob,Grep,Bash(node:*),Bash(git:*),Bash(ls:*),Bash(cat:*),Bash(grep:*),Bash(sed:*)"
+            --append-system-prompt "Você atende o professor de física dono do app FisiCarlão. Ele não é programador: responda sempre em português, curto e sem jargão técnico. Leia e siga o CLAUDE.md do repositório. Regras: (1) Mude apenas arquivos dentro de www/ (o conteúdo fica quase todo em www/data.js). Nunca altere android/, .github/, CLAUDE.md nem arquivos de configuração. (2) Sempre que mudar algo em www/, aumente o número de VERSAO em www/sw.js (ex.: fisicarlao-v2 -> fisicarlao-v3); arquivo novo em www/ entra na lista ARQUIVOS do sw.js. (3) Depois de editar, confirme que o JavaScript não quebrou com: node -e \"global.window={};require('./www/data.js');console.log(window.F.length)\" (e, se mexer no index.html, que os scripts continuam válidos). (4) Física correta: confira fórmulas, unidades e contas dos exemplos. (5) Se o pedido estiver ambíguo ou puder estragar algo, pergunte antes de mudar, sem fazer commit. (6) Faça commit das mudanças com mensagem em português. (7) Na resposta final, diga em 2 a 4 frases o que mudou e onde o professor vai ver isso no app. Não fale de branches, PRs nem commits: a publicação é automática."
+
+      - name: Juntar a mudança na main
+        id: merge
+        env:
+          BRANCH: ${{ steps.claude.outputs.branch_name }}
+          N: ${{ github.event.issue.number }}
+          TITULO: ${{ github.event.issue.title }}
+        run: |
+          git config user.name "claude[bot]"
+          git config user.email "41898282+claude[bot]@users.noreply.github.com"
+          if [ -z "$BRANCH" ] || ! git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            echo "mudou=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          git fetch origin main "$BRANCH"
+          if git diff --quiet origin/main "origin/$BRANCH" -- www; then
+            echo "mudou=false" >> "$GITHUB_OUTPUT"
+          else
+            git checkout -B main origin/main
+            git merge --no-ff --no-edit "origin/$BRANCH" -m "Pedido #$N: $TITULO"
+            git push origin main
+            echo "mudou=true" >> "$GITHUB_OUTPUT"
+          fi
+          git push origin --delete "$BRANCH" || true
+
+      - name: Conferir o app antes de publicar
+        if: steps.merge.outputs.mudou == 'true'
+        run: |
+          node -e "global.window={};require('./www/data.js');if(!window.F||!window.F.length)throw new Error('data.js sem fórmulas');console.log('fórmulas:',window.F.length)"
+          node -e "const s=require('fs').readFileSync('www/index.html','utf8');for(const m of s.matchAll(/<script>([\s\S]*?)<\/script>/g))new Function(m[1]);console.log('index.html ok')"
+          node -e "new Function(require('fs').readFileSync('www/sw.js','utf8'));console.log('sw.js ok')"
+
+      - uses: actions/configure-pages@v5
+        if: steps.merge.outputs.mudou == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.merge.outputs.mudou == 'true'
+        with:
+          path: www
+      - id: deploy
+        if: steps.merge.outputs.mudou == 'true'
+        uses: actions/deploy-pages@v4
+
+      - name: Avisar no pedido
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          N: ${{ github.event.issue.number }}
+          MUDOU: ${{ steps.merge.outputs.mudou }}
+          DEPLOY: ${{ steps.deploy.outcome }}
+          JOB: ${{ job.status }}
+        run: |
+          if [ "$MUDOU" = "true" ] && [ "$DEPLOY" = "success" ]; then
+            MSG="✅ Publicado! A nova versão já está em https://cephoenix.github.io/fisicarlao/ — se o app estiver aberto, feche e abra de novo para atualizar."
+          elif [ "$MUDOU" = "true" ]; then
+            MSG="⚠️ A mudança foi salva, mas a publicação falhou. Nada mudou para os alunos ainda. Responda aqui 'tente publicar de novo' ou chame o Carlos."
+          elif [ "$JOB" != "success" ]; then
+            MSG="⚠️ Algo deu errado e nada foi publicado. Tente reescrever o pedido ou chame o Carlos."
+          else
+            MSG="ℹ️ Nada foi publicado desta vez (sem mudanças no app)."
+          fi
+          gh issue comment "$N" --repo "$GITHUB_REPOSITORY" --body "$MSG"

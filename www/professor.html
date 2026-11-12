@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F0D0B">
+<title>FisiCarlão · Professor</title>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* Área do professor: chat para pedir mudanças no app. Mesma paleta do app (laranja do Carlão, escuro por padrão). */
+:root{
+  --grad:linear-gradient(135deg,#FFA800,#FF6F00); --brand2:#FF6F00; --on-brand:#1A0E00;
+  --bg:#0F0D0B; --surface:#1A1714; --surface-2:#252019; --line:#332C24; --ink:#FFF7EE; --muted:#B3A595;
+  --ok:#5BD68A; --warn:#FFC24D; --err:#FF6B6B;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#FFF6EC; --surface:#FFFFFF; --surface-2:#FFEEDB; --line:#F1DEC8; --ink:#1A1410; --muted:#6E6255;
+  --ok:#1E9E55; --warn:#B07700; --err:#C93636; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#FFF6EC; --surface:#FFFFFF; --surface-2:#FFEEDB; --line:#F1DEC8; --ink:#1A1410; --muted:#6E6255;
+  --ok:#1E9E55; --warn:#B07700; --err:#C93636; color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+[hidden]{display:none!important}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid #FF8A00;outline-offset:2px;border-radius:10px}
+.wrap{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+header a{color:inherit;text-decoration:none}
+header img{height:34px}
+header h1{font-family:var(--display);font-size:1.1rem;white-space:nowrap;margin:0;letter-spacing:-.01em}
+header .sp{flex:1}
+.ghost{white-space:nowrap;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;font-size:.9rem}
+.btn{background:var(--grad);color:var(--on-brand);border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--brand2)}
+.btn:disabled{opacity:.5;cursor:default}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.card h2{font-family:var(--display);margin:0 0 6px;font-size:1.3rem}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input[type=password],input[type=text],textarea{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px}
+ol.how{padding-left:1.2rem;margin:10px 0 0;display:flex;flex-direction:column;gap:6px}
+ol.how code{font-family:var(--mono);font-size:.85em;background:var(--surface-2);padding:1px 6px;border-radius:6px}
+a{color:#FF9A1F}
+.err{color:var(--err);font-weight:700;margin-top:10px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;text-align:left;width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;cursor:pointer}
+.item b{display:block}
+.item > div{min-width:0}
+.item b,.item small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item small{display:block;color:var(--muted)}
+.chip{font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--surface-2);white-space:nowrap}
+.chip.ok{color:var(--ok)} .chip.run{color:var(--warn)} .chip.err{color:var(--err)}
+.thread{flex:1;display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.msg{max-width:88%;border-radius:18px;padding:10px 14px;word-wrap:break-word;overflow-wrap:anywhere}
+.msg.me{align-self:flex-end;background:var(--grad);color:var(--on-brand);border-bottom-right-radius:6px}
+.msg.bot{align-self:flex-start;background:var(--surface);border:1.5px solid var(--line);border-bottom-left-radius:6px}
+.msg.sys{align-self:center;background:var(--surface-2);font-weight:700;font-size:.9rem;text-align:center}
+.msg .who{font-size:.72rem;font-weight:800;opacity:.75;margin-bottom:2px;text-transform:uppercase;letter-spacing:.06em}
+.msg a{color:inherit;text-decoration:underline}
+.msg.bot a{color:#FF9A1F}
+.composer{position:sticky;bottom:0;background:var(--bg);padding-top:8px;display:flex;gap:8px;align-items:flex-end}
+.composer textarea{min-height:52px;max-height:40vh;resize:none}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+.tips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tips button{background:var(--surface-2);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;font-size:.85rem;font-weight:600;text-align:left}
+.typing{align-self:flex-start;color:var(--muted);font-weight:700;font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.typing::after{content:"";animation:dots 1.2s steps(4) infinite}@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="./" title="Voltar ao app"><img src="img/logo-carlao.png" alt="Carlão"></a>
+    <h1 id="titulo">Pedidos de mudança</h1>
+    <span class="sp"></span>
+    <button class="ghost" id="voltar" hidden>‹ Pedidos</button>
+    <button class="ghost" id="sair" hidden title="Remover o acesso deste aparelho">Sair</button>
+  </header>
+
+  <!-- 1. Configuração (uma vez por aparelho) -->
+  <section id="tela-config" hidden>
+    <div class="card">
+      <h2>Conectar este aparelho</h2>
+      <p class="muted">Esta área é só do professor. Aqui você pede mudanças no FisiCarlão em português, e o Claude altera e publica o app.</p>
+      <p class="muted small">Para isso, este aparelho precisa de uma chave de acesso do GitHub, que fica guardada só aqui.</p>
+      <ol class="how small">
+        <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → criar token</a>.</li>
+        <li><b>Repository access:</b> “Only select repositories” → <code>fisicarlao</code>.</li>
+        <li><b>Permissions → Repository → Issues:</b> “Read and write”. Nenhuma outra.</li>
+        <li>Clique em <b>Generate token</b> e cole abaixo.</li>
+      </ol>
+      <label for="token">Chave de acesso</label>
+      <input type="password" id="token" autocomplete="off" placeholder="github_pat_…">
+      <div style="margin-top:14px"><button class="btn" id="conectar">Conectar</button></div>
+      <div class="err" id="config-err" hidden></div>
+    </div>
+  </section>
+
+  <!-- 2. Lista de pedidos -->
+  <section id="tela-lista" hidden>
+    <div class="card" style="margin-bottom:14px">
+      <h2>Novo pedido</h2>
+      <p class="muted small">Explique o que quer mudar, como explicaria para um colega. O Claude responde aqui, faz a mudança e publica.</p>
+      <textarea id="novo" rows="3" placeholder="Ex.: Troque o exemplo da Lei de Ohm por um com chuveiro elétrico de 220 V."></textarea>
+      <div class="tips" id="dicas"></div>
+      <div style="margin-top:12px"><button class="btn" id="enviar-novo">Enviar pedido</button></div>
+      <div class="err" id="novo-err" hidden></div>
+    </div>
+    <h2 style="font-family:var(--display);font-size:1.1rem;margin:4px 0 10px">Pedidos anteriores</h2>
+    <div class="list" id="lista"><div class="empty">Carregando…</div></div>
+  </section>
+
+  <!-- 3. Conversa de um pedido -->
+  <section id="tela-conversa" hidden style="flex:1;display:flex;flex-direction:column">
+    <div class="thread" id="thread"></div>
+    <div class="composer">
+      <textarea id="resposta" rows="1" placeholder="Responder ou pedir um ajuste…"></textarea>
+      <button class="btn" id="enviar-resp">Enviar</button>
+    </div>
+    <div class="err" id="resp-err" hidden></div>
+  </section>
+</div>
+
+<script>
+const REPO = "cephoenix/fisicarlao";
+const API = "https://api.github.com/repos/" + REPO;
+const PREFIXO = "[Pedido] ";
+const KEY = "fisi-prof-token";
+const $ = id => document.getElementById(id);
+let token = ""; try { token = localStorage.getItem(KEY) || ""; } catch(e){}
+let atual = null, timer = null, ultimoTotal = -1;
+
+const DICAS = [
+  "Adicione a fórmula de Bernoulli em Hidrostática, com um exemplo.",
+  "Mude o preço da aula de Eletrodinâmica para R$ 39,90.",
+  "Coloque este link da Kiwify na aula de Cinemática: ",
+  "Troque a dica da 2ª Lei de Newton por: "
+];
+
+async function gh(path, opts = {}){
+  const r = await fetch(path.startsWith("http") ? path : API + path, {
+    ...opts,
+    headers: { "Accept":"application/vnd.github+json", "Authorization":"Bearer " + token, "X-GitHub-Api-Version":"2022-11-28", ...(opts.body ? {"Content-Type":"application/json"} : {}) }
+  });
+  if (!r.ok) {
+    const msg = r.status === 401 ? "A chave de acesso não funcionou. Confira se copiou inteira ou crie outra."
+      : r.status === 403 || r.status === 404 ? "A chave não tem permissão para Issues no repositório fisicarlao."
+      : "O GitHub respondeu com erro " + r.status + ". Tente de novo em instantes.";
+    const e = new Error(msg); e.status = r.status; throw e;
+  }
+  return r.status === 204 ? null : r.json();
+}
+
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+// Markdown simples: links, negrito, itálico, código, listas de tarefas e quebras de linha.
+function md(s){
+  s = String(s || "").replace(/<!--[\s\S]*?-->/g, "").replace(/<\/?details>|<\/?summary>/g, "").replace(/<img[^>]*>/g, "").trim();
+  let h = esc(s);
+  h = h.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  h = h.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+  h = h.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  h = h.replace(/^\s*[-*] \[x\] /gim, "✅ ").replace(/^\s*[-*] \[ \] /gim, "⬜ ").replace(/^#{1,6} (.*)$/gm, "<b>$1</b>").replace(/^\s*[-*] /gm, "• ").replace(/^---$/gm, "");
+  return h.replace(/\n{3,}/g, "\n\n").replace(/\n/g, "<br>");
+}
+const tiraGatilho = t => String(t || "").replace(/^\s*@claude\s*/i, "");
+const quando = d => new Date(d).toLocaleString("pt-BR", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
+const ehBot = u => /\[bot\]$/.test(u.login) || u.type === "Bot";
+
+function mostra(tela){
+  for (const t of ["config","lista","conversa"]) $("tela-" + t).hidden = t !== tela;
+  $("voltar").hidden = tela !== "conversa";
+  $("sair").hidden = tela === "config";
+  $("titulo").textContent = tela === "conversa" ? "Conversa" : "Pedidos de mudança";
+  clearInterval(timer); timer = null;
+}
+
+function status(comments){
+  const ultimo = [...comments].reverse().find(c => ehBot(c.user));
+  if (!ultimo) return ["Aguardando", "run"];
+  const b = ultimo.body || "";
+  if (/Publicado/.test(b)) return ["Publicado", "ok"];
+  if (/sem mudanças|Nada foi publicado/i.test(b)) return ["Respondido", ""];
+  if (/falhou|erro|error|failed/i.test(b) && !/finished/i.test(b)) return ["Com problema", "err"];
+  if (/finished|concluí|terminou/i.test(b)) return ["Publicando", "run"];
+  return ["Trabalhando", "run"];
+}
+
+async function carregaLista(){
+  const el = $("lista");
+  try {
+    const issues = (await gh("/issues?state=all&per_page=30&sort=created&direction=desc")).filter(i => !i.pull_request && i.title.startsWith(PREFIXO));
+    if (!issues.length) { el.innerHTML = '<div class="empty">Nenhum pedido ainda. O primeiro vai aparecer aqui.</div>'; return; }
+    el.innerHTML = issues.map(i => `<button class="item" data-n="${i.number}"><div><b>${esc(i.title.slice(PREFIXO.length))}</b><small>#${i.number} · ${quando(i.created_at)} · ${i.comments} resposta${i.comments===1?"":"s"}</small></div><span class="chip" id="st-${i.number}">…</span></button>`).join("");
+    for (const i of issues.slice(0, 8)) {
+      gh(`/issues/${i.number}/comments?per_page=100`).then(cs => { const [t, k] = status(cs); const c = $("st-" + i.number); if (c) { c.textContent = t; c.className = "chip " + k; } }).catch(()=>{});
+    }
+  } catch(e) { el.innerHTML = `<div class="empty">${esc(e.message)}</div>`; if (e.status === 401) sair(); }
+}
+
+async function abre(n){
+  atual = n; ultimoTotal = -1; mostra("conversa");
+  $("thread").innerHTML = '<div class="empty">Carregando…</div>';
+  await atualiza();
+  timer = setInterval(atualiza, 8000);
+}
+
+async function atualiza(){
+  if (!atual) return;
+  try {
+    const [issue, cs] = await Promise.all([gh(`/issues/${atual}`), gh(`/issues/${atual}/comments?per_page=100`)]);
+    if (cs.length === ultimoTotal && !cs.some(c => ehBot(c.user) && /trabalhando|working|Claude Code is working/i.test(c.body))) return;
+    ultimoTotal = cs.length;
+    const msgs = [{u: issue.user, body: issue.body, at: issue.created_at}, ...cs.map(c => ({u: c.user, body: c.body, at: c.updated_at || c.created_at}))];
+    let html = msgs.map(m => {
+      const bot = ehBot(m.u);
+      const quem = bot ? (/github-actions/.test(m.u.login) ? "Publicação" : "Claude") : "Você";
+      const cls = bot ? (/github-actions/.test(m.u.login) ? "sys" : "bot") : "me";
+      return `<div class="msg ${cls}"><div class="who">${quem} · ${quando(m.at)}</div>${md(bot ? m.body : tiraGatilho(m.body))}</div>`;
+    }).join("");
+    const [st] = status(cs);
+    if (st === "Aguardando" || st === "Trabalhando" || st === "Publicando") html += `<div class="typing">${st === "Publicando" ? "Publicando a nova versão" : "Claude está trabalhando"}</div>`;
+    $("thread").innerHTML = html;
+    window.scrollTo(0, document.body.scrollHeight);
+  } catch(e) { $("resp-err").textContent = e.message; $("resp-err").hidden = false; }
+}
+
+async function novoPedido(){
+  const txt = $("novo").value.trim();
+  $("novo-err").hidden = true;
+  if (txt.length < 5) { $("novo-err").textContent = "Escreva um pouco mais sobre o que quer mudar."; $("novo-err").hidden = false; return; }
+  $("enviar-novo").disabled = true;
+  try {
+    const titulo = PREFIXO + (txt.split("\n")[0].slice(0, 70) + (txt.length > 70 ? "…" : ""));
+    const i = await gh("/issues", { method:"POST", body: JSON.stringify({ title: titulo, body: "@claude " + txt }) });
+    $("novo").value = "";
+    abre(i.number);
+  } catch(e) { $("novo-err").textContent = e.message; $("novo-err").hidden = false; }
+  finally { $("enviar-novo").disabled = false; }
+}
+
+async function responde(){
+  const txt = $("resposta").value.trim(); if (!txt) return;
+  $("resp-err").hidden = true; $("enviar-resp").disabled = true;
+  try {
+    await gh(`/issues/${atual}/comments`, { method:"POST", body: JSON.stringify({ body: "@claude " + txt }) });
+    $("resposta").value = ""; ultimoTotal = -1; await atualiza();
+  } catch(e) { $("resp-err").textContent = e.message; $("resp-err").hidden = false; }
+  finally { $("enviar-resp").disabled = false; }
+}
+
+async function conectar(){
+  const t = $("token").value.trim(); $("config-err").hidden = true;
+  if (!t) return;
+  token = t;
+  try {
+    await gh("/issues?per_page=1");
+    try { localStorage.setItem(KEY, t); } catch(e){}
+    $("token").value = ""; inicio();
+  } catch(e) { token = ""; $("config-err").textContent = e.message; $("config-err").hidden = false; }
+}
+
+function sair(){ try { localStorage.removeItem(KEY); } catch(e){} token = ""; atual = null; mostra("config"); }
+function inicio(){ atual = null; if (!token) return mostra("config"); mostra("lista"); carregaLista(); }
+
+$("dicas").innerHTML = DICAS.map((d, i) => `<button data-dica="${i}">${esc(d)}</button>`).join("");
+$("dicas").addEventListener("click", e => { const b = e.target.closest("[data-dica]"); if (!b) return; $("novo").value = DICAS[b.dataset.dica]; $("novo").focus(); });
+$("lista").addEventListener("click", e => { const b = e.target.closest("[data-n]"); if (b) abre(Number(b.dataset.n)); });
+$("conectar").onclick = conectar;
+$("token").addEventListener("keydown", e => { if (e.key === "Enter") conectar(); });
+$("enviar-novo").onclick = novoPedido;
+$("enviar-resp").onclick = responde;
+$("resposta").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); responde(); } });
+$("voltar").onclick = inicio;
+$("sair").onclick = sair;
+try { const t = localStorage.getItem("fisi-tema"); if (t) document.documentElement.dataset.theme = t; } catch(e){}
+inicio();
+</script>
+</body>
+</html>
