@@ -37,7 +37,7 @@ f("vm","cin","Velocidade média","v_m = \\dfrac{\\Delta s}{\\Delta t}",[["v_m","
 f("am","cin","Aceleração média","a_m = \\dfrac{\\Delta v}{\\Delta t}",[["a_m","aceleração média","m/s²"],["\\Delta v","variação da velocidade","m/s"],["\\Delta t","intervalo de tempo","s"]],
  "Um carro vai de 0 a 30 m/s em 6 s. Qual a aceleração média?",["a_m = (30 − 0) ÷ 6"],"a_m = 5 m/s²","Aceleração diz quanto a velocidade muda a cada segundo. Se a aceleração é negativa, o corpo está freando (se estiver andando no sentido positivo)."),
 f("mu","cin","Função horária do MU","s = s_0 + v\\,t",[["s","posição final","m"],["s_0","posição inicial","m"],["v","velocidade (constante)","m/s"],["t","tempo","s"]],
- "Um ciclista está na posição 20 m e anda a 5 m/s. Onde estará após 10 s?",["s = 20 + 5 · 10"],"s = 70 m","No MU a velocidade é constante, então a aceleração é zero."),
+ "Um ciclista está na posição 20 m e anda a 5 m/s. Onde estará após 10 s?",["s = 20 + 5 · 10"],"s = 70 m","No MU a velocidade é constante, então a aceleração é zero. No gráfico s × t, o MU é uma reta."),
 f("muvv","cin","Velocidade no MUV","v = v_0 + a\\,t",[["v","velocidade final","m/s"],["v_0","velocidade inicial","m/s"],["a","aceleração","m/s²"],["t","tempo","s"]],
  "Um móvel tem v₀ = 4 m/s e a = 3 m/s². Qual a velocidade após 6 s?",["v = 4 + 3 · 6"],"v = 22 m/s","Freando? Use a aceleração com sinal negativo."),
 f("muv","cin","Função horária do MUV","s = s_0 + v_0 t + \\dfrac{a t^2}{2}",[["s","posição final","m"],["s_0","posição inicial","m"],["v_0","velocidade inicial","m/s"],["a","aceleração","m/s²"],["t","tempo","s"]],
