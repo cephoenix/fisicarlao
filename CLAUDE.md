@@ -39,7 +39,7 @@ App Android de fórmulas de física para alunos do ensino médio, feito pelo Car
 - `www/professor.html`: área escondida (5 toques rápidos no logo do app, ou abrir `professor.html`). O professor escreve um pedido → vira issue `[Pedido] ...` com `@claude` no repositório.
 - O aparelho do professor guarda (só no localStorage dele) um token fine-grained do GitHub com permissão **apenas Issues (read/write) no repo fisicarlao**. Nunca colocar token no código.
 - `.github/workflows/claude.yml`: `anthropics/claude-code-action@v1` faz a mudança numa branch; o próprio workflow junta na `main`, valida (`data.js`, scripts do `index.html`, `sw.js`), publica no GitHub Pages e comenta "✅ Publicado". Um pedido por vez. Só dono/colaboradores disparam (repo é público).
-- Precisa do secret `ANTHROPIC_API_KEY` (ou `CLAUDE_CODE_OAUTH_TOKEN`) em Settings → Secrets and variables → Actions.
+- Usa o secret `CLAUDE_CODE_OAUTH_TOKEN` (assinatura Pro do Carlos; gerado com `claude setup-token`, vale 1 ano). Para trocar por chave da API, use `anthropic_api_key` no workflow e o secret `ANTHROPIC_API_KEY` em Settings → Secrets and variables → Actions.
 - Regras dadas ao Claude no workflow: mexer só em `www/`, aumentar `VERSAO` no `sw.js`, responder em português sem jargão, perguntar se o pedido for ambíguo.
 - Push feito pelo próprio workflow (GITHUB_TOKEN) não dispara o `pages.yml`; por isso o `claude.yml` publica sozinho.
 
