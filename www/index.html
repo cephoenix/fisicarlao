@@ -58,6 +58,7 @@ button{font:inherit;color:inherit}
 .brand{display:flex;flex-direction:column;gap:2px}
 .brand .kicker{font-size:.7rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .brand img{height:58px;width:auto;display:block;margin-left:-4px}
+.top-actions{display:flex;gap:8px;align-items:center}
 .icon-btn{width:44px;height:44px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;font-size:1.15rem;display:grid;place-items:center;box-shadow:0 3px 0 var(--line)}
 
 /* busca */
@@ -184,7 +185,11 @@ section.block h3{font-size:1.2rem;margin:0 2px 10px;display:flex;gap:8px;align-i
 <div class="app">
   <header class="top">
     <div class="brand"><span class="kicker">Física · Ensino médio</span><img src="img/logo-carlao.png" alt="Carlão" width="136" height="58"></div>
-    <button class="icon-btn press" id="tema" aria-label="Trocar tema claro/escuro">☾</button>
+    <div class="top-actions">
+      <!-- Botão visível enquanto não há alunos; para esconder, apague esta linha (os 5 toques no logo continuam funcionando). -->
+      <a class="icon-btn press" id="prof" href="professor.html" aria-label="Pedidos do professor" title="Pedidos do professor" style="text-decoration:none;color:inherit">✏️</a>
+      <button class="icon-btn press" id="tema" aria-label="Trocar tema claro/escuro">☾</button>
+    </div>
   </header>
   <main id="view" class="view"></main>
   <p class="proto">Versão de teste · preços, vídeos e links são exemplos</p>

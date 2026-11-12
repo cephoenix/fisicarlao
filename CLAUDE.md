@@ -36,7 +36,7 @@ App Android de fórmulas de física para alunos do ensino médio, feito pelo Car
 - `IOS-GITHUB-ACTIONS.md` (app iOS nativo via GitHub Actions) fica como plano futuro, se um dia quiserem a App Store.
 
 ## Chat de pedidos do professor (11/11/2026)
-- `www/professor.html`: área escondida (5 toques rápidos no logo do app, ou abrir `professor.html`). O professor escreve um pedido → vira issue `[Pedido] ...` com `@claude` no repositório.
+- `www/professor.html`: aberta pelo botão ✏️ no topo do app (visível enquanto não há alunos — apagar a linha `id="prof"` no `index.html` para esconder), por 5 toques rápidos no logo, ou abrindo `professor.html`. O professor escreve um pedido → vira issue `[Pedido] ...` com `@claude` no repositório.
 - O aparelho do professor guarda (só no localStorage dele) um token fine-grained do GitHub com permissão **apenas Issues (read/write) no repo fisicarlao**. Nunca colocar token no código.
 - `.github/workflows/claude.yml`: `anthropics/claude-code-action@v1` faz a mudança numa branch; o próprio workflow junta na `main`, valida (`data.js`, scripts do `index.html`, `sw.js`), publica no GitHub Pages e comenta "✅ Publicado". Um pedido por vez. Só dono/colaboradores disparam (repo é público).
 - Usa o secret `CLAUDE_CODE_OAUTH_TOKEN` (assinatura Pro do Carlos; gerado com `claude setup-token`, vale 1 ano). Para trocar por chave da API, use `anthropic_api_key` no workflow e o secret `ANTHROPIC_API_KEY` em Settings → Secrets and variables → Actions.
