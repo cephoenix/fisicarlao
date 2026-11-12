@@ -1,5 +1,5 @@
 // FisiCarlão — service worker. Ao mudar qualquer arquivo de www/, aumente a VERSAO.
-const VERSAO = "fisicarlao-v8";
+const VERSAO = "fisicarlao-v9";
 const ARQUIVOS = [
   "./", "./index.html", "./data.js", "./katex.min.js", "./manifest.webmanifest",
   "./fonts/fonts.css", "./fonts/BricolageGrotesque-0.woff2", "./fonts/JetBrainsMono-1.woff2", "./fonts/PlusJakartaSans-2.woff2",
@@ -25,11 +25,13 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   if (url.origin !== location.origin) return; // Kiwify, YouTube etc. passam direto
 
-  // Páginas: tenta a rede para pegar atualização; sem internet, usa a cópia guardada.
+  // Páginas (index.html, professor.html): sempre buscam a versão mais nova na rede, sem cache do navegador;
+  // sem internet, usam a última cópia guardada daquela mesma página (ou o app principal).
   if (req.mode === "navigate") {
     e.respondWith(
-      fetch(req).then(r => { const cp = r.clone(); caches.open(VERSAO).then(c => c.put("./index.html", cp)); return r; })
-        .catch(() => caches.match("./index.html"))
+      fetch(req.url, { cache: "no-store", credentials: "same-origin" })
+        .then(r => { if (r.ok) { const cp = r.clone(); caches.open(VERSAO).then(c => c.put(url.pathname, cp)); } return r; })
+        .catch(async () => (await caches.match(url.pathname)) || caches.match("./index.html"))
     );
     return;
   }
