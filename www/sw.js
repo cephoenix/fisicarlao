@@ -1,5 +1,5 @@
 // FisiCarlão — service worker. Ao mudar qualquer arquivo de www/, aumente a VERSAO.
-const VERSAO = "fisicarlao-v3";
+const VERSAO = "fisicarlao-v4";
 const ARQUIVOS = [
   "./", "./index.html", "./data.js", "./katex.min.js", "./manifest.webmanifest",
   "./fonts/fonts.css", "./fonts/BricolageGrotesque-0.woff2", "./fonts/JetBrainsMono-1.woff2", "./fonts/PlusJakartaSans-2.woff2",

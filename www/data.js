@@ -33,7 +33,7 @@ function f(id,t,nome,tex,vars,enun,passos,resp,dica){ return {id,t,nome,tex,vars
 window.F = [
 // ── CINEMÁTICA
 f("vm","cin","Velocidade média","v_m = \\dfrac{\\Delta s}{\\Delta t}",[["v_m","velocidade média","m/s"],["\\Delta s","deslocamento","m"],["\\Delta t","intervalo de tempo","s"]],
- "Um carro percorre 150 km em 2 h. Qual a velocidade média?",["Δs = 150 km e Δt = 2 h","v_m = 150 ÷ 2"],"v_m = 75 km/h","Para passar de km/h para m/s, divida por 3,6. Para voltar, multiplique por 3,6."),
+ "Um carro percorre 150 km em 2 h. Qual a velocidade média?",["Δs = 150 km e Δt = 2 h","v_m = 150 ÷ 2"],"v_m = 75 km/h","Para passar de km/h para m/s, divida por 3,6. Para voltar, multiplique por 3,6. Exemplo rápido: 36 km/h = 10 m/s."),
 f("am","cin","Aceleração média","a_m = \\dfrac{\\Delta v}{\\Delta t}",[["a_m","aceleração média","m/s²"],["\\Delta v","variação da velocidade","m/s"],["\\Delta t","intervalo de tempo","s"]],
  "Um carro vai de 0 a 30 m/s em 6 s. Qual a aceleração média?",["a_m = (30 − 0) ÷ 6"],"a_m = 5 m/s²","Aceleração diz quanto a velocidade muda a cada segundo."),
 f("mu","cin","Função horária do MU","s = s_0 + v\\,t",[["s","posição final","m"],["s_0","posição inicial","m"],["v","velocidade (constante)","m/s"],["t","tempo","s"]],
