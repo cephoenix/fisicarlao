@@ -240,7 +240,7 @@ function renderList(){
   const q = norm(state.q.trim());
   const chips = [...AREAS.map(a=>[a.id,LOOK[a.id][1]+" "+a.nome,cor(a.id)]),["all","Todas",""]]
     .map(([k,n,s])=>`<button class="chip press" style="${s}" id="chip-${k}" data-area="${k}" aria-pressed="${!q && state.area===k}">${n}</button>`).join("");
-  let html = `<h1 class="hello">Qual fórmula<br><span>você precisa hoje?</span></h1>
+  let html = `<h1 class="hello">Qual fórmula<br><span>você precisa ontem?</span></h1>
     <div class="search-wrap"><input class="search" id="busca" type="search" placeholder="Busca entre ${F.length}: atrito, Snell, Ohm…" value="${esc(state.q)}" aria-label="Buscar fórmula"></div>
     <div class="chips">${chips}</div>`;
   let total = 0, body = "";
