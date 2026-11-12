@@ -56,11 +56,15 @@ jobs:
         id: merge
         env:
           BRANCH: ${{ steps.claude.outputs.branch_name }}
+          GH_TOKEN: ${{ github.token }}
           N: ${{ github.event.issue.number }}
           TITULO: ${{ github.event.issue.title }}
         run: |
           git config user.name "claude[bot]"
           git config user.email "41898282+claude[bot]@users.noreply.github.com"
+          # A action do Claude troca a credencial do git; volta a usar o token deste workflow.
+          git config --unset-all http.https://github.com/.extraheader || true
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           if [ -z "$BRANCH" ] || ! git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
             echo "mudou=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
