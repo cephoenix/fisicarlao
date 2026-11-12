@@ -91,7 +91,8 @@ a{color:#FF9A1F}
     <div class="card">
       <h2>Conectar este aparelho</h2>
       <p class="muted">Esta área é só do professor. Aqui você pede mudanças no FisiCarlão em português, e o Claude altera e publica o app.</p>
-      <p class="muted small">Para isso, este aparelho precisa de uma chave de acesso do GitHub, que fica guardada só aqui.</p>
+      <p class="muted small"><b>Professor:</b> você não precisa fazer nada aqui. Peça ao Carlos o link de acesso e toque nele.</p>
+      <p class="muted small"><b>Carlos:</b> crie a chave do GitHub uma vez (abaixo); depois use “Conectar outro aparelho” para mandar o link ao professor.</p>
       <ol class="how small">
         <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com → criar token</a>.</li>
         <li><b>Repository access:</b> “Only select repositories” → <code>fisicarlao</code>.</li>
@@ -117,6 +118,13 @@ a{color:#FF9A1F}
     </div>
     <h2 style="font-family:var(--display);font-size:1.1rem;margin:4px 0 10px">Pedidos anteriores</h2>
     <div class="list" id="lista"><div class="empty">Carregando…</div></div>
+    <details class="card small" style="margin-top:18px">
+      <summary style="cursor:pointer;font-weight:700">Conectar outro aparelho (para o Carlos)</summary>
+      <p class="muted">Gera um link que já abre esta área conectada, sem precisar de chave. Mande só para o professor (por exemplo, no WhatsApp dele) e não compartilhe em grupos: quem tiver o link consegue pedir mudanças no app.</p>
+      <button class="ghost" id="gerar-link">Copiar link de acesso</button>
+      <input type="text" id="link-acesso" readonly hidden style="margin-top:10px">
+      <div class="muted" id="link-ok" hidden style="margin-top:8px">Link copiado. Cole na conversa com o professor.</div>
+    </details>
   </section>
 
   <!-- 3. Conversa de um pedido -->
@@ -137,6 +145,14 @@ const PREFIXO = "[Pedido] ";
 const KEY = "fisi-prof-token";
 const $ = id => document.getElementById(id);
 let token = ""; try { token = localStorage.getItem(KEY) || ""; } catch(e){}
+// Link de acesso enviado pelo Carlos: professor.html#chave=TOKEN → guarda neste aparelho e tira da barra de endereço.
+(function(){
+  const m = location.hash.match(/^#chave=([A-Za-z0-9_]+)$/);
+  if (!m) return;
+  token = m[1];
+  try { localStorage.setItem(KEY, token); } catch(e){}
+  history.replaceState(null, "", location.pathname);
+})();
 let atual = null, timer = null, ultimoTotal = -1;
 
 const DICAS = [
@@ -281,6 +297,12 @@ $("enviar-resp").onclick = responde;
 $("resposta").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); responde(); } });
 $("voltar").onclick = inicio;
 $("sair").onclick = sair;
+$("gerar-link").onclick = async () => {
+  const link = location.origin + location.pathname + "#chave=" + token;
+  const campo = $("link-acesso"); campo.value = link; campo.hidden = false;
+  try { await navigator.clipboard.writeText(link); $("link-ok").hidden = false; }
+  catch(e) { campo.select(); $("link-ok").textContent = "Selecione o link acima e copie."; $("link-ok").hidden = false; }
+};
 try { const t = localStorage.getItem("fisi-tema"); if (t) document.documentElement.dataset.theme = t; } catch(e){}
 inicio();
 </script>
