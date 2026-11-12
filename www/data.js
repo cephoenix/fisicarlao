@@ -24,7 +24,7 @@ window.TOPICS = {
   mhs:{nome:"Movimento harmônico simples", aula:["MHS Avançado",["Pêndulo e massa-mola","Energia no MHS","Gráficos do MHS"],"24,90"]},
   ond:{nome:"Ondas e som", aula:["Ondulatória Avançada",["Interferência e ressonância","Cordas e tubos sonoros","Efeito Doppler"],"34,90"]},
   eles:{nome:"Eletrostática", aula:["Eletrostática Avançada",["Eletrização e contato","Campo e potencial de várias cargas","Capacitores"],"29,90"]},
-  eld:{nome:"Eletrodinâmica", aula:["Circuitos Avançados",["Associação mista de resistores","Geradores e receptores","Conta de luz e consumo"],"34,90"]},
+  eld:{nome:"Eletrodinâmica", aula:["Circuitos Avançados",["Associação mista de resistores","Geradores e receptores","Conta de luz e consumo"],"29,99"]},
   mag:{nome:"Magnetismo", aula:["Magnetismo Avançado",["Regras da mão direita","Indução e Lei de Lenz","Transformadores e motores"],"34,90"]}
 };
 
